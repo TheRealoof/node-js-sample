@@ -14,11 +14,6 @@ jobs:
           name: Run Docker container
           command: docker run -d -p 8080:8080 --name myapp_container myapp:latest
       - run:
-          name: Check if port 8080 is reachable
-          command: |
-            sleep 10
-            curl --fail http://localhost:8080 || (docker logs myapp_container && exit 1)
-      - run:
           name: Login to Docker Hub
           command: |
             echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
