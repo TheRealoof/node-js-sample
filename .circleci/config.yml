@@ -10,11 +10,14 @@ jobs:
       - run:
           name: Build Docker image
           command: docker build -t myapp:latest .
+      - run:
+          name: Save Docker Image to Tar
+          command: |
+            docker save myapp:latest -o myapp_latest.tar
       - persist_to_workspace:
           root: .
           paths:
-            - Dockerfile
-            - .circleci
+            - myapp_latest.tar
   run_container:
     docker:
       - image: circleci/node:14
@@ -22,6 +25,9 @@ jobs:
       - attach_workspace:
           at: .
       - setup_remote_docker
+      - run:
+          name: Load Docker Image from Tar
+          command: docker load -i myapp_latest.tar
       - run:
           name: Run Docker container
           command: docker run -d -p 8080:8080 --name myapp_container myapp:latest
@@ -32,6 +38,9 @@ jobs:
       - attach_workspace:
           at: .
       - setup_remote_docker
+      - run:
+          name: Load Docker Image from Tar
+          command: docker load -i myapp_latest.tar
       - run:
           name: Login to Docker Hub
           command: |
