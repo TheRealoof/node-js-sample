@@ -1,9 +1,15 @@
 version: 2.1
 
+arm_machine: &arm_machine
+  machine:
+    image: ubuntu-2204:current
+    resource_class: arm.medium
+
 jobs:
   build:
     docker:
       - image: circleci/node:14
+    <<: *arm_machine
     steps:
       - checkout
       - setup_remote_docker
@@ -21,6 +27,7 @@ jobs:
   run_container:
     docker:
       - image: circleci/node:14
+    <<: *arm_machine
     steps:
       - attach_workspace:
           at: .
@@ -34,6 +41,7 @@ jobs:
   push_to_dockerhub:
     docker:
       - image: circleci/node:14
+    <<: *arm_machine
     steps:
       - attach_workspace:
           at: .
