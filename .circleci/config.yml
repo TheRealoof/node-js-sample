@@ -10,9 +10,19 @@ jobs:
       - run:
           name: Build Docker image
           command: docker build -t myapp:latest .
+  run_container:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - setup_remote_docker
       - run:
           name: Run Docker container
           command: docker run -d -p 8080:8080 --name myapp_container myapp:latest
+  push_to_dockerhub:
+    docker:
+      - image: circleci/node:14
+    steps:
+      - setup_remote_docker
       - run:
           name: Login to Docker Hub
           command: |
@@ -29,3 +39,9 @@ workflows:
   build_and_deploy:
     jobs:
       - build
+      - run_container:
+          requires:
+            - build
+      - push_to_dockerhub:
+          requires:
+            - run_container
